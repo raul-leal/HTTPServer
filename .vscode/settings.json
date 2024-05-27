@@ -1,0 +1,18 @@
+{
+    // macOS Modern Tweaks
+    "editor.fontSize": 14,
+    "editor.fontFamily": "SF Mono, Monaco, 'Courier New', monospace",
+    "editor.tabSize": 2,
+    "editor.fontWeight": "normal",
+    "window.titleBarStyle": "native",
+    "window.nativeTabs": true,
+    "window.zoomLevel": 0,
+    "workbench.iconTheme": "material-icon-theme",
+    
+    // Disable Tab File Icons
+    "workbench.editor.showIcons": false,
+    // Disable Red Sidebar Errors
+    "problems.decorations.enabled": false,
+    "workbench.productIconTheme": "macos-modern",
+    "workbench.colorTheme": "GitHub Dark",
+}
