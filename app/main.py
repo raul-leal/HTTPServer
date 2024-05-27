@@ -7,7 +7,10 @@ def parse_request(data):
     return method, path, version
 
 def get_response(path):
-    if path == '/':
+    if path.startswith('/echo'):
+        path_message = path.split('/')[2]
+        return f'HTTP/1.1 200 OK\r\n\Content-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
+    elif path == '/':
         return 'HTTP/1.1 200 OK\r\n\r\n'
     else:
         return 'HTTP/1.1 404 Not Found\r\n\r\n'
@@ -16,11 +19,13 @@ def handle_request(client_socket):
     data = client_socket.recv(1024)
     print(data)
     method, path, version = parse_request(data.decode())
+    print(f'Method: {method}, path: {path}, version: {version}')
     response = get_response(path)
     client_socket.sendall(response.encode())
 
 def main():
-    server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    # server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    server_socket = socket.create_server(("localhost", 4221))
     print("Server is listening on port 4221...")
     try:
         while True:

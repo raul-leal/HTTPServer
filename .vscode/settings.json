@@ -6,7 +6,7 @@
     "editor.fontWeight": "normal",
     "window.titleBarStyle": "native",
     "window.nativeTabs": true,
-    "window.zoomLevel": 0,
+    "window.zoomLevel": -0.5,
     "workbench.iconTheme": "material-icon-theme",
     
     // Disable Tab File Icons
