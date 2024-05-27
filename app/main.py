@@ -3,15 +3,16 @@ import socket
 def parse_request(data):
     lines = data.split('\r\n')
     start_line = lines[0]
-    method, path, version, test = start_line.split(' ')
-    return method, path, version, test
+    second_line = lines[1]
+    method, path, version = start_line.split(' ')
+    return method, path, version, second_line
 
 def get_response(path):
     if path.startswith('/echo'):
         path_message = path.split('/')[2]
         return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
     elif path.startswith('/user-agent'):
-        path_user_agent = "placeholder"
+        path_user_agent = path[12:]
         return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_user_agent)}\r\n\r\n{path_user_agent}'
     elif path == '/':
         return 'HTTP/1.1 200 OK\r\n\r\n'
