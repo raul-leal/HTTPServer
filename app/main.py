@@ -3,16 +3,16 @@ import socket
 def parse_request(data):
     lines = data.split('\r\n')
     start_line = lines[0]
-    second_line = lines[1]
+    user_agent_line = lines[2]
     method, path, version = start_line.split(' ')
-    return method, path, version, second_line
+    return method, path, version, user_agent_line
 
-def get_response(path):
+def get_response(path, user_agent):
     if path.startswith('/echo'):
         path_message = path.split('/')[2]
         return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
     elif path.startswith('/user-agent'):
-        path_user_agent = path[12:]
+        path_user_agent = user_agent.split(': ')[1]
         return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_user_agent)}\r\n\r\n{path_user_agent}'
     elif path == '/':
         return 'HTTP/1.1 200 OK\r\n\r\n'
@@ -22,9 +22,9 @@ def get_response(path):
 def handle_request(client_socket):
     data = client_socket.recv(1024)
     print(data)
-    method, path, version, test = parse_request(data.decode())
-    print(f'Method: {method}, path: {path}, version: {version}, test: {test}')
-    response = get_response(path)
+    method, path, version, user_agent = parse_request(data.decode())
+    print(f'Method: {method}, path: {path}, version: {version}, user-agent: {user_agent}')
+    response = get_response(path, user_agent)
     client_socket.sendall(response.encode())
 
 def main():
