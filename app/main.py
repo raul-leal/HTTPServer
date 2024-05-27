@@ -7,7 +7,9 @@ def handle_request(client_socket):
 
 def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    print("Server is listening on port 4221...")
     server_socket.accept()
+    handle_request(server_socket)
 
 if __name__ == "__main__":
     main()
