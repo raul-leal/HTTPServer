@@ -9,7 +9,7 @@ def parse_request(data):
 def get_response(path):
     if path.startswith('/echo'):
         path_message = path.split('/')[2]
-        return f'HTTP/1.1 200 OK\r\n\Content-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
+        return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
     elif path == '/':
         return 'HTTP/1.1 200 OK\r\n\r\n'
     else:
