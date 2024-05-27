@@ -1,4 +1,5 @@
 import socket
+import threading
 
 def parse_request(data):
     lines = data.split('\r\n')
@@ -27,6 +28,12 @@ def handle_request(client_socket):
     response = get_response(path, user_agent)
     client_socket.sendall(response.encode())
 
+def client_thread(client_socket, addr):
+    print(f"Connection from {addr} has been established.")
+    handle_request(client_socket)
+    client_socket.close()
+    print(f"Connection from {addr} has been closed.")
+
 def main():
     # server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     server_socket = socket.create_server(("localhost", 4221))
@@ -35,9 +42,7 @@ def main():
         while True:
             print("Waiting for a new connection...")
             client_socket, addr = server_socket.accept()
-            print(f"Connection from {addr} has been established.")
-            handle_request(client_socket)
-            client_socket.close()
+            threading.Thread(target=client_thread, args=(client_socket, addr)).start()
     except KeyboardInterrupt:
         print("\nShutting down the server...")
     finally:
