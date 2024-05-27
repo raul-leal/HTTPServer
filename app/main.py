@@ -10,6 +10,9 @@ def get_response(path):
     if path.startswith('/echo'):
         path_message = path.split('/')[2]
         return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
+    elif path.startswith('/user-agent'):
+        path_user_agent = path[12:]
+        return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_user_agent)}\r\n\r\n{path_user_agent}'
     elif path == '/':
         return 'HTTP/1.1 200 OK\r\n\r\n'
     else:
@@ -17,7 +20,6 @@ def get_response(path):
 
 def handle_request(client_socket):
     data = client_socket.recv(1024)
-    print(data)
     method, path, version = parse_request(data.decode())
     print(f'Method: {method}, path: {path}, version: {version}')
     response = get_response(path)
