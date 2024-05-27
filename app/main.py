@@ -20,6 +20,7 @@ def get_response(path):
 
 def handle_request(client_socket):
     data = client_socket.recv(1024)
+    print(data)
     method, path, version = parse_request(data.decode())
     print(f'Method: {method}, path: {path}, version: {version}')
     response = get_response(path)
