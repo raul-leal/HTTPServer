@@ -1,9 +1,23 @@
 import socket
 
+def parse_request(data):
+    lines = data.split('\r\n')
+    start_line = lines[0]
+    method, path, version = start_line.split(' ')
+    return method, path, version
+
+def get_response(path):
+    if path == '/':
+        return 'HTTP/1.1 200 OK\r\n\r\n'
+    else:
+        return 'HTTP/1.1 404 Not Found\r\n\r\n'
+
 def handle_request(client_socket):
     data = client_socket.recv(1024)
     print(data)
-    client_socket.sendall(b"HTTP/1.1 200 OK\r\n\r\n")
+    method, path, version = parse_request(data.decode())
+    response = get_response(path)
+    client_socket.sendall(response.encode())
 
 def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
