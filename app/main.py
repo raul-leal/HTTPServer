@@ -50,6 +50,7 @@ def handle_request(client_socket):
             response = generate_response('200 OK', 'text/plain', echo_str)
         elif path == 'user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
+            print(user_agent)
             response = generate_response('200 OK', 'text/plain', user_agent)
         elif path.startswith('/files/'):
             args = get_directory()
