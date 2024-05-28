@@ -52,7 +52,7 @@ def files_get(path):
         response = generate_response('404 Not Found', 'text/plain', 'File Not Found')
     return response
 
-def files_post(path, data, headers):
+def files_post(path, data):
     args = get_directory()
     file_path = path.split("/files/")[1]
     full_file_path = os.path.join(args.directory, file_path)
@@ -89,7 +89,7 @@ def handle_request(client_socket):
             if method == 'GET':
                 response = files_get(path)
             elif method == 'POST':
-                response = files_post(path, data, headers)
+                response = files_post(path, data)
         else:
             response = generate_response('404 Not Found', 'text/plain', 'Not Found')
         client_socket.send(response.encode())
