@@ -54,7 +54,7 @@ def handle_request(client_socket):
         elif path.startswith('/files/'):
             args = get_directory()
             file_path = path.split("/files/")[1]
-            full_file_path = os.path.join(args.directory, 'files', file_path)
+            full_file_path = os.path.join(args.directory, file_path)
             if os.path.isfile(full_file_path):
                 try:
                     with open(full_file_path, 'rb') as file:
