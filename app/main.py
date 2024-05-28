@@ -43,7 +43,6 @@ def files_get(path):
         try:
             with open(full_file_path, 'rb') as file:
                 file_contents = file.read()
-                print(file_contents)
             response = generate_response('200 OK', 'application/octet-stream', file_contents)
         except PermissionError:
             print(f'Permission denied while reading {full_file_path}')
@@ -53,7 +52,7 @@ def files_get(path):
         response = generate_response('404 Not Found', 'text/plain', 'File Not Found')
     return response
 
-def files_post(path, data):
+def files_post(path, data, headers):
     args = get_directory()
     file_path = path.split("/files/")[1]
     full_file_path = os.path.join(args.directory, file_path)
@@ -90,7 +89,7 @@ def handle_request(client_socket):
             if method == 'GET':
                 response = files_get(path)
             elif method == 'POST':
-                response = files_post(path, data)
+                response = files_post(path, data, headers)
         else:
             response = generate_response('404 Not Found', 'text/plain', 'Not Found')
         client_socket.send(response.encode())
