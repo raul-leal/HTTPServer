@@ -35,6 +35,41 @@ def generate_response(status, content_type, body):
     ]
     return '\r\n'.join(headers)
 
+def files_get(path):
+    args = get_directory()
+    file_path = path.split("/files/")[1]
+    full_file_path = os.path.join(args.directory, file_path)
+    if os.path.isfile(full_file_path):
+        try:
+            with open(full_file_path, 'rb') as file:
+                file_contents = file.read()
+                print(file_contents)
+            response = generate_response('200 OK', 'application/octet-stream', file_contents)
+        except PermissionError:
+            print(f'Permission denied while reading {full_file_path}')
+            response = generate_response('403 Forbidden', 'text/plain', 'Access Denied')
+    else:
+        print(f'File {full_file_path} not found')
+        response = generate_response('404 Not Found', 'text/plain', 'File Not Found')
+    return response
+
+def files_post(path, data):
+    args = get_directory()
+    file_path = path.split("/files/")[1]
+    full_file_path = os.path.join(args.directory, file_path)
+    if os.path.isfile(full_file_path):
+        print(f'File {full_file_path} already exists')
+        response = generate_response('409 Conflict', 'text/plain', 'File Already Exists')
+    else:
+        try:
+            with open(full_file_path, 'wb') as file:
+                file.write(data.split('\r\n\r\n')[1].encode())
+            response = generate_response('201 Created', 'text/plain', 'File Created')
+        except PermissionError:
+            print(f'Permission denied while writing {full_file_path}')
+            response = generate_response('403 Forbidden', 'text/plain', 'Access Denied')
+    return response
+
 def handle_request(client_socket):
     try:
         data = client_socket.recv(1024).decode()
@@ -52,22 +87,10 @@ def handle_request(client_socket):
             user_agent = headers.get('User-Agent', 'Unknown')
             response = generate_response('200 OK', 'text/plain', user_agent)
         elif path.startswith('/files/'):
-            args = get_directory()
-            file_path = path.split("/files/")[1]
-            full_file_path = os.path.join(args.directory, file_path)
-            if os.path.isfile(full_file_path):
-                try:
-                    with open(full_file_path, 'rb') as file:
-                        file_contents = file.read()
-                        print(file_contents)
-                    response = generate_response('200 OK', 'application/octet-stream', file_contents)
-                except PermissionError:
-                    print(f'Permission denied while reading {full_file_path}')
-                    response = generate_response('403 Forbidden', 'text/plain', 'Access Denied')
-            else:
-                print(f'File {full_file_path} not found')
-                response = generate_response('404 Not Found', 'text/plain', 'File Not Found')
-
+            if method == 'GET':
+                response = files_get(path)
+            elif method == 'POST':
+                response = files_post(path, data)
         else:
             response = generate_response('404 Not Found', 'text/plain', 'Not Found')
         client_socket.send(response.encode())
