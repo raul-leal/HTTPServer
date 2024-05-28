@@ -60,7 +60,7 @@ def handle_request(client_socket):
                     with open(full_file_path, 'rb') as file:
                         file_contents = file.read()
                         print(file_contents)
-                    response = generate_response('200 OK', 'aplication/octet-stream', file_contents)
+                    response = generate_response('200 OK', 'application/octet-stream', file_contents)
                 except PermissionError:
                     print(f'Permission denied while reading {full_file_path}')
                     response = generate_response('403 Forbidden', 'text/plain', 'Access Denied')
