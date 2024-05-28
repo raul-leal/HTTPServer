@@ -42,14 +42,16 @@ def handle_request(client_socket):
             return
         
         method, path, version, headers = parse_request(data)
-        print(path)
-        print(headers)
+
+        print(f'path = {path}')
+        print(f'headers = {headers}')
+
         if path == '/':
             response = generate_response('200 OK', 'text/plain', '')
         elif path.startswith('/echo'):
             echo_str = path.split("/echo/")[1]
             response = generate_response('200 OK', 'text/plain', echo_str)
-        elif path.startswith('/user-agent:'):
+        elif path == '/user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
             print(user_agent)
             response = generate_response('200 OK', 'text/plain', user_agent)
