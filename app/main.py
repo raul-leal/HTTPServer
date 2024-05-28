@@ -1,43 +1,82 @@
 import socket
 import threading
+import os
 
 def parse_request(data):
     lines = data.split('\r\n')
     start_line = lines[0]
-    user_agent_line = lines[2]
     method, path, version = start_line.split(' ')
-    return method, path, version, user_agent_line
+    headers = {}
+    for line in lines[1:]:
+        if line == '':
+            break
+        header, value = line.split(': ', 1)
+        headers[header] = value
+    return method, path, version, headers
 
-def get_response(path, user_agent):
-    if path.startswith('/echo'):
-        path_message = path.split('/')[2]
-        return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_message)}\r\n\r\n{path_message}'
-    elif path.startswith('/user-agent'):
-        path_user_agent = user_agent.split(': ')[1]
-        return f'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(path_user_agent)}\r\n\r\n{path_user_agent}'
-    elif path == '/':
-        return 'HTTP/1.1 200 OK\r\n\r\n'
-    else:
-        return 'HTTP/1.1 404 Not Found\r\n\r\n'
+def generate_response(status, content_type, body):
+    if isinstance(body, bytes):
+        body = body.decode()
+    body_length = len(body)
+
+    headers = [
+        f'HTTP/1.1 {status}',
+        f'Content-Type: {content_type}',
+        f'Content-Length: {body_length}',
+        '',
+        body
+    ]
+    return '\r\n'.join(headers)
 
 def handle_request(client_socket):
-    data = client_socket.recv(1024)
-    print(data)
-    method, path, version, user_agent = parse_request(data.decode())
-    print(f'Method: {method}, path: {path}, version: {version}, user-agent: {user_agent}')
-    response = get_response(path, user_agent)
-    client_socket.sendall(response.encode())
+    try:
+        data = client_socket.recv(1024).decode()
+        if not data:
+            return
+        
+        method, path, version, headers = parse_request(data)
+
+        if path == '/':
+            response = generate_response('200 OK', 'text/plain', '')
+        elif path.startswith('/echo'):
+            echo_str = path.split("/echo/")[1]
+            response = generate_response('200 OK', 'text/plain', echo_str)
+        elif path == 'user-agent':
+            user_agent = headers.get('User-Agent', 'Unknown')
+            response = generate_response('200 OK', 'text/plain', user_agent)
+        elif path.startswith('/files/'):
+            file_path = path.split("/files/")[1]
+            full_file_path = os.path.join(os.getcwd(), 'files', file_path)
+            if os.path.isfile(full_file_path):
+                try:
+                    with open(full_file_path, 'rb') as file:
+                        file_contents = file.read()
+                        print(file_contents)
+                    response = generate_response('200 OK', 'aplication/octet-stream', file_contents)
+                except PermissionError:
+                    print(f'Permission denied while reading {full_file_path}')
+                    response = generate_response('403 Forbidden', 'text/plain', 'Access Denied')
+            else:
+                print(f'File {full_file_path} not found')
+                response = generate_response('404 Not Found', 'text/plain', 'File Not Found')
+
+        else:
+            response = generate_response('404 Not Found', 'text/plain', 'Not Found')
+        client_socket.send(response.encode())
+    finally:
+        client_socket.close()
 
 def client_thread(client_socket, addr):
     print(f"Connection from {addr} has been established.")
     handle_request(client_socket)
-    client_socket.close()
     print(f"Connection from {addr} has been closed.")
 
 def main():
     # server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     server_socket = socket.create_server(("localhost", 4221))
+    server_socket.listen()
     print("Server is listening on port 4221...")
+
     try:
         while True:
             print("Waiting for a new connection...")
