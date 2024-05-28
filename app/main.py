@@ -1,6 +1,13 @@
 import socket
 import threading
 import os
+import argparse
+
+def get_directory():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--directory', type=str, default='files', help='Directory to serve files from')
+    args = parser.parse_args()
+    return args
 
 def parse_request(data):
     lines = data.split('\r\n')
@@ -45,8 +52,9 @@ def handle_request(client_socket):
             user_agent = headers.get('User-Agent', 'Unknown')
             response = generate_response('200 OK', 'text/plain', user_agent)
         elif path.startswith('/files/'):
+            args = get_directory()
             file_path = path.split("/files/")[1]
-            full_file_path = os.path.join(os.getcwd(), 'files', file_path)
+            full_file_path = os.path.join(args.directory, 'files', file_path)
             if os.path.isfile(full_file_path):
                 try:
                     with open(full_file_path, 'rb') as file:
