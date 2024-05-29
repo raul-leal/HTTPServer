@@ -29,7 +29,7 @@ def generate_response(status, content_type, body, encoding):
     if encoding != None:
         headers = [
             f'HTTP/1.1 {status}',
-            f'Content-Encoding : {encoding}',
+            f'Content-Encoding: {encoding}',
             f'Content-Type: {content_type}',
             f'Content-Length: {body_length}',
             '',
