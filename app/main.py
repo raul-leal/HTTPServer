@@ -81,7 +81,7 @@ def handle_request(client_socket):
             response = generate_response('200 OK', 'text/plain', '')
         elif path.startswith('/echo'):
             echo_str = path.split("/echo/")[1]
-            encoding = path.split("Accept-Encoding: ")[1]
+            encoding = data.split("Accept-Encoding: ")[1]
             response = generate_response('200 OK', 'text/plain', echo_str, encoding)
         elif path == '/user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
