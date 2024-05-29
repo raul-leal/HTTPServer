@@ -26,7 +26,7 @@ def generate_response(status, content_type, body, encoding=None):
         body = body.decode()
     body_length = len(body)
 
-    if encoding != None or encoding == 'invalid-encoding':
+    if encoding != None or encoding != 'invalid-encoding':
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Encoding: {encoding}',
