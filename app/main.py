@@ -21,17 +21,27 @@ def parse_request(data):
         headers[header] = value
     return method, path, version, headers
 
-def generate_response(status, content_type, body):
+def generate_response(status, content_type, body, encoding):
     if isinstance(body, bytes):
         body = body.decode()
     body_length = len(body)
 
-    headers = [
-        f'HTTP/1.1 {status}',
-        f'Content-Type: {content_type}',
-        f'Content-Length: {body_length}',
-        '',
-        body
+    if encoding != None:
+        headers = [
+            f'HTTP/1.1 {status}',
+            f'Content-Encoding : {encoding}',
+            f'Content-Type: {content_type}',
+            f'Content-Length: {body_length}',
+            '',
+            body
+        ]
+    else:
+        headers = [
+            f'HTTP/1.1 {status}',
+            f'Content-Type: {content_type}',
+            f'Content-Length: {body_length}',
+            '',
+            body
     ]
     return '\r\n'.join(headers)
 
@@ -81,9 +91,9 @@ def handle_request(client_socket):
             response = generate_response('200 OK', 'text/plain', '')
         elif path.startswith('/echo'):
             echo_str = path.split("/echo/")[1]
-            encoding = data.split("Accept-Encoding: ")[1]
-            response = generate_response('200 OK', 'text/plain', echo_str)
-            response = response + '\r\n' + encoding
+            encoding = data.split('Accept-Encoding: ')[1].split('\r\n')[0]
+            print(encoding)
+            response = generate_response('200 OK', 'text/plain', echo_str, encoding)
         elif path == '/user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
             response = generate_response('200 OK', 'text/plain', user_agent)
