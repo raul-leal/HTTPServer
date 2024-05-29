@@ -21,12 +21,12 @@ def parse_request(data):
         headers[header] = value
     return method, path, version, headers
 
-def generate_response(status, content_type, body, encoding):
+def generate_response(status, content_type, body, encoding=None):
     if isinstance(body, bytes):
         body = body.decode()
     body_length = len(body)
 
-    if encoding != None:
+    if encoding != None or encoding == 'invalid-encoding':
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Encoding: {encoding}',
@@ -92,7 +92,6 @@ def handle_request(client_socket):
         elif path.startswith('/echo'):
             echo_str = path.split("/echo/")[1]
             encoding = data.split('Accept-Encoding: ')[1].split('\r\n')[0]
-            print(encoding)
             response = generate_response('200 OK', 'text/plain', echo_str, encoding)
         elif path == '/user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
