@@ -112,7 +112,9 @@ def handle_request(client_socket):
                 response = files_post(path, data)
         else:
             response = generate_response('404 Not Found', 'text/plain', 'Not Found')
-        client_socket.send(response.encode())
+        if isinstance(response, str):
+            response = response.encode()
+        client_socket.send(response)
     finally:
         client_socket.close()
 
