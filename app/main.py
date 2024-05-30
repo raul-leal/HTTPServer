@@ -29,7 +29,6 @@ def generate_response(status, content_type, body, encoding=None):
     if encoding != None and 'gzip' in encoding:
         gzip_encoded_body = gzip.compress(body.encode())
         body_length = len(gzip_encoded_body)
-        print(body_length)
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Encoding: gzip',
