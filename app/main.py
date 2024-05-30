@@ -2,6 +2,7 @@ import socket
 import threading
 import os
 import argparse
+import gzip
 
 def get_directory():
     parser = argparse.ArgumentParser()
@@ -24,9 +25,10 @@ def parse_request(data):
 def generate_response(status, content_type, body, encoding=None):
     if isinstance(body, bytes):
         body = body.decode()
-    body_length = len(body)
 
     if encoding != None and 'gzip' in encoding:
+        body = gzip.compress(body)
+        body_length = len(body)
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Encoding: gzip',
@@ -36,6 +38,7 @@ def generate_response(status, content_type, body, encoding=None):
             body
         ]
     else:
+        body_length = len(body)
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Type: {content_type}',
