@@ -129,7 +129,7 @@ def main():
 
     try:
         while True:
-            print("\nWaiting for a new connection...")
+            print("Waiting for a new connection...")
             client_socket, addr = server_socket.accept()
             threading.Thread(target=client_thread, args=(client_socket, addr)).start()
     except KeyboardInterrupt:
