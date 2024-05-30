@@ -38,7 +38,7 @@ def generate_response(status, content_type, body, encoding=None):
             '',
             gzip_encoded_body
         ]
-        response = '\r\n'.join(headers[:-1]) + gzip_encoded_body
+        response = '\r\n'.join(headers[:-1]).encode() + gzip_encoded_body
     else:
         body_length = len(body)
         headers = [
