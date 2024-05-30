@@ -35,7 +35,6 @@ def generate_response(status, content_type, body, encoding=None):
             f'Content-Type: {content_type}',
             f'Content-Length: {body_length}',
             '',
-            ''
         ]
         response = '\r\n'.join(headers).encode() + gzip_encoded_body
     else:
@@ -130,7 +129,7 @@ def main():
 
     try:
         while True:
-            print("Waiting for a new connection...")
+            print("\nWaiting for a new connection...")
             client_socket, addr = server_socket.accept()
             threading.Thread(target=client_thread, args=(client_socket, addr)).start()
     except KeyboardInterrupt:
