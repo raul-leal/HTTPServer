@@ -36,8 +36,9 @@ def generate_response(status, content_type, body, encoding=None):
             f'Content-Type: {content_type}',
             f'Content-Length: {body_length}',
             '',
-            'gzip-encoded-data'
+            gzip_encoded_body
         ]
+        response = '\r\n'.join(headers).encode() + gzip_encoded_body
     else:
         body_length = len(body)
         headers = [
@@ -46,8 +47,9 @@ def generate_response(status, content_type, body, encoding=None):
             f'Content-Length: {body_length}',
             '',
             body
-    ]
-    return '\r\n'.join(headers)
+        ]
+        response = '\r\n'.join(headers)
+    return response
 
 def files_get(path):
     args = get_directory()
