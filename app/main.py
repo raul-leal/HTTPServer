@@ -37,6 +37,7 @@ def generate_response(status, content_type, body, encoding=None):
             '',
             body
         ]
+        body = body.decode()
     else:
         body_length = len(body)
         headers = [
