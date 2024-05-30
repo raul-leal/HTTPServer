@@ -26,7 +26,7 @@ def generate_response(status, content_type, body, encoding=None):
         body = body.decode()
     body_length = len(body)
 
-    if encoding != None and encoding != 'invalid-encoding':
+    if encoding == 'gzip':
         headers = [
             f'HTTP/1.1 {status}',
             f'Content-Encoding: {encoding}',
@@ -91,10 +91,10 @@ def handle_request(client_socket):
             response = generate_response('200 OK', 'text/plain', '')
         elif path.startswith('/echo'):
             echo_str = path.split("/echo/")[1]
-            if 'Accept-Encoding' not in data:
-                encoding = None
-            else:
+            if 'Accept-Encoding' in data:
                 encoding = data.split('Accept-Encoding: ')[1].split('\r\n')[0]
+            else:
+                encoding = None
             response = generate_response('200 OK', 'text/plain', echo_str, encoding)
         elif path == '/user-agent':
             user_agent = headers.get('User-Agent', 'Unknown')
