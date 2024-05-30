@@ -118,7 +118,7 @@ def handle_request(client_socket):
         client_socket.close()
 
 def client_thread(client_socket, addr):
-    print(f"Connection from {addr} has been established.")
+    print(f"Connection from {addr} has been established.\n")
     handle_request(client_socket)
     print(f"Connection from {addr} has been closed.")
 
@@ -130,7 +130,7 @@ def main():
 
     try:
         while True:
-            print("\nWaiting for a new connection...")
+            print("Waiting for a new connection...")
             client_socket, addr = server_socket.accept()
             threading.Thread(target=client_thread, args=(client_socket, addr)).start()
     except KeyboardInterrupt:
