@@ -36,7 +36,7 @@ def generate_response(status, content_type, body, encoding=None):
             f'Content-Type: {content_type}',
             f'Content-Length: {body_length}',
             '',
-            ''
+            'gzip-encoded-data'
         ]
         response = '\r\n'.join(headers).encode() + gzip_encoded_body
     else:
